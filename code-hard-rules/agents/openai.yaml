@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Hard Rules"
+  short_description: "后端 Mapper、Service、枚举硬规则。"
+  default_prompt: "Use $code-hard-rules to enforce backend Mapper, Service, and enum hard rules."

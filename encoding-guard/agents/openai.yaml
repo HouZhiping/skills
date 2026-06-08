@@ -1,0 +1,5 @@
+interface:
+  display_name: "Encoding Guard"
+  short_description: "防止中文乱码，安全处理 UTF-8 文本文件。"
+  default_prompt: "Use $encoding-guard to safely read, inspect, and edit Chinese text files without causing encoding corruption."
+
