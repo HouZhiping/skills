@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kafka Ops"
+  short_description: "Operate Kafka topics safely."
+  default_prompt: "Use $kafka-ops to inspect Kafka topics, metadata, and create missing development topics safely."
