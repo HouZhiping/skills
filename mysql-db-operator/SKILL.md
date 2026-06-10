@@ -13,7 +13,15 @@ Use this skill for gather-system MySQL work, especially the system user/menu dat
 - Common table: `sys_menu`
 - The project PostgreSQL business database is not covered by this skill; use `pgsql-db-operator` for PostgreSQL.
 
-If host, port, username, or password are not available in the current context, ask for the missing connection fields before connecting.
+## Credential Source
+
+For host, port, database/schema, username, password, and other private connection fields:
+
+1. First read `doc/server_psd.md` in the current workspace if it exists.
+2. If the file is missing or does not contain the needed field, use only values explicitly available in the current conversation or stable memory.
+3. If still missing, ask the user for the missing fields before connecting.
+
+Never store passwords in this skill, commit credentials to Git, or echo passwords back in the final response.
 
 ## Client Preference
 
@@ -97,4 +105,3 @@ WHERE parent_id = 30
 ORDER BY order_num, id
 LIMIT 10;
 ```
-

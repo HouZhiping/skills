@@ -3,7 +3,32 @@ const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
-const DEFAULT_BROKER = "172.30.11.182:19092";
+const findWorkspaceSecretFile = startDir => {
+  let dir = startDir;
+  while (dir && dir !== path.dirname(dir)) {
+    const candidate = path.join(dir, "doc", "server_psd.md");
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+    dir = path.dirname(dir);
+  }
+  return null;
+};
+
+const readDefaultBroker = () => {
+  if (process.env.KAFKA_BROKER) {
+    return process.env.KAFKA_BROKER;
+  }
+  const secretFile = findWorkspaceSecretFile(process.cwd());
+  if (!secretFile) {
+    return null;
+  }
+  const content = fs.readFileSync(secretFile, "utf8");
+  const kafkaLine = content.split(/\r?\n/).find(line => /kafka/i.test(line) && /\d+\.\d+\.\d+\.\d+:\d+/.test(line));
+  const match = kafkaLine && kafkaLine.match(/\d+\.\d+\.\d+\.\d+:\d+/);
+  return match ? match[0] : null;
+};
+
 const DEFAULT_TOPICS = [
   { topic: "instance.dispatch", numPartitions: 12, replicationFactor: 1 },
   { topic: "event.report", numPartitions: 12, replicationFactor: 1 },
@@ -14,7 +39,7 @@ const DEFAULT_TOPICS = [
 ];
 
 const parseArgs = argv => {
-  const args = { command: argv[2] || "help", broker: DEFAULT_BROKER, topics: [] };
+  const args = { command: argv[2] || "help", broker: readDefaultBroker(), topics: [] };
   for (let i = 3; i < argv.length; i += 1) {
     const value = argv[i];
     if (value === "--broker") {
@@ -105,10 +130,14 @@ const main = async () => {
   if (args.command === "help" || args.command === "--help" || args.command === "-h") {
     print({
       usage: "node kafka-ops.js <metadata|list|describe|create-default-topics> [--broker host:port] [--topic name]",
-      defaultBroker: DEFAULT_BROKER,
+      defaultBroker: args.broker || null,
       defaultTopics: DEFAULT_TOPICS
     });
     return;
+  }
+
+  if (!args.broker) {
+    throw new Error("Missing Kafka broker. Pass --broker <host:port>, set KAFKA_BROKER, or add it to doc/server_psd.md.");
   }
 
   const admin = getAdmin(args.broker);

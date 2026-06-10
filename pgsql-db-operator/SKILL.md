@@ -1,25 +1,25 @@
 ﻿---
 name: "pgsql-db-operator"
-description: "操作 gather-system PostgreSQL 数据库时使用：连接 172.30.11.182:5432/gather_hub_dev，用户 myuser。适用于查询表结构、排查数据、执行 SELECT/EXPLAIN 只读 SQL、生成或执行 PostgreSQL SQL。查询无需额外授权，但明细查询默认必须分页且最多返回 10 条，超过 10 条或无 LIMIT 的明细查询必须先询问用户；任何修改数据或表结构的 SQL（INSERT/UPDATE/DELETE/TRUNCATE/CREATE/ALTER/DROP/REINDEX/VACUUM FULL 等）必须先说明目的、影响范围、风险和回滚建议，并获得用户明确授权后才能执行。"
+description: "操作 gather-system PostgreSQL 数据库时使用。连接信息和账号密码优先从当前项目 doc/server_psd.md 读取；文件没有、会话/记忆也没有时再询问用户。适用于查询表结构、排查数据、执行 SELECT/EXPLAIN 只读 SQL、生成或执行 PostgreSQL SQL。查询无需额外授权，但明细查询默认必须分页且最多返回 10 条，超过 10 条或无 LIMIT 的明细查询必须先询问用户；任何修改数据或表结构的 SQL（INSERT/UPDATE/DELETE/TRUNCATE/CREATE/ALTER/DROP/REINDEX/VACUUM FULL 等）必须先说明目的、影响范围、风险和回滚建议，并获得用户明确授权后才能执行。"
 ---
 
 # PostgreSQL DB Operator
 
 ## Connection
 
-Use this database for gather-system PostgreSQL work:
+For host, port, database, username, password, and other private connection fields:
 
-- Host: `172.30.11.182`
-- Port: `5432`
-- Database: `gather_hub_dev`
-- Username: `myuser`
-- Password: ask the user or use a password already provided in the current conversation; never store it in this skill.
+1. First read `doc/server_psd.md` in the current workspace if it exists.
+2. If the file is missing or does not contain the needed field, use only values explicitly available in the current conversation or stable memory.
+3. If still missing, ask the user for the missing fields before connecting.
+
+Never store passwords in this skill, commit credentials to Git, or echo passwords back in the final response.
 
 Prefer `psql` when available. On Windows PowerShell, set the password only for the command scope:
 
 ```powershell
 $env:PGPASSWORD = "<password>"
-psql -h 172.30.11.182 -p 5432 -U myuser -d gather_hub_dev -c "SELECT 1;"
+psql -h <host> -p <port> -U <user> -d <database> -c "SELECT 1;"
 Remove-Item Env:PGPASSWORD
 ```
 
@@ -84,7 +84,7 @@ List tables:
 
 ```powershell
 $env:PGPASSWORD = "<password>"
-psql -h 172.30.11.182 -p 5432 -U myuser -d gather_hub_dev -c "\dt"
+psql -h <host> -p <port> -U <user> -d <database> -c "\dt"
 Remove-Item Env:PGPASSWORD
 ```
 
@@ -92,7 +92,7 @@ Describe a table:
 
 ```powershell
 $env:PGPASSWORD = "<password>"
-psql -h 172.30.11.182 -p 5432 -U myuser -d gather_hub_dev -c "\d+ t_task_info"
+psql -h <host> -p <port> -U <user> -d <database> -c "\d+ t_task_info"
 Remove-Item Env:PGPASSWORD
 ```
 
@@ -100,6 +100,6 @@ Run a read-only query:
 
 ```powershell
 $env:PGPASSWORD = "<password>"
-psql -h 172.30.11.182 -p 5432 -U myuser -d gather_hub_dev -c "SELECT * FROM t_task_info ORDER BY id DESC LIMIT 10;"
+psql -h <host> -p <port> -U <user> -d <database> -c "SELECT * FROM t_task_info ORDER BY id DESC LIMIT 10;"
 Remove-Item Env:PGPASSWORD
 ```

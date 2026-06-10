@@ -1,15 +1,25 @@
 ---
 name: kafka-ops
-description: Operate Kafka safely from Codex for development and troubleshooting. Use when checking whether a host is Kafka, inspecting advertised broker metadata, listing or describing topics, creating development topics, validating partitions, or diagnosing Kafka bootstrap/listener/topic issues. Default development broker is 172.30.11.182:19092.
+description: Operate Kafka safely from Codex for development and troubleshooting. Use when checking whether a host is Kafka, inspecting advertised broker metadata, listing or describing topics, creating development topics, validating partitions, or diagnosing Kafka bootstrap/listener/topic issues. Read broker and private connection fields from doc/server_psd.md first when available.
 ---
 
 # Kafka Ops
 
 Use this skill for Kafka inspection and small admin tasks. Prefer read-only checks first, then perform explicit creation only when the user asks.
 
+## Connection Source
+
+For Kafka broker addresses, usernames, passwords, SASL/SSL settings, and other private connection fields:
+
+1. First read `doc/server_psd.md` in the current workspace if it exists.
+2. If the file is missing or does not contain the needed field, use only values explicitly available in the current conversation or stable memory.
+3. If still missing, ask the user for the missing fields before connecting.
+
+Never store passwords in this skill, commit credentials to Git, or echo passwords back in the final response.
+
 ## Defaults
 
-- Development bootstrap server: `172.30.11.182:19092`
+- Broker: pass `--broker <host:port>` or set `KAFKA_BROKER`; the helper script can also infer a Kafka broker from `doc/server_psd.md` when the file exists.
 - Default replication factor: `1`
 - Default topics for Gather Hub development:
   - `instance.dispatch` with 12 partitions
