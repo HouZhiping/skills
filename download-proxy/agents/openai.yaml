@@ -1,0 +1,3 @@
+display_name: Download Proxy
+short_description: Run CLI downloads through the local Windows proxy without changing project files.
+default_prompt: Use the local proxy for command-line downloads and dependency installs when it helps.

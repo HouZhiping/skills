@@ -1,0 +1,7 @@
+﻿interface:
+  display_name: "PostgreSQL 数据库操作"
+  short_description: "查询可直接执行，修改需授权的 PG 操作技能"
+  brand_color: "#336791"
+  default_prompt: "Use $pgsql-db-operator to inspect the gather-system PostgreSQL database safely."
+policy:
+  allow_implicit_invocation: true
